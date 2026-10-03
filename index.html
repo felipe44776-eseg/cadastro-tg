@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Cadastro de tema de TG · ESEG</title>
+<link rel="icon" type="image/png" href="icone.png">
+<meta name="tcc-envio" content="">
+<style>
+  /* Identidade ESEG (manual de TG 2025): marinho, lavandas e Arial; texto sempre escuro. Coluna única, pensada para o celular. */
+  :root {
+    --marinho: #000653;
+    --marinho-claro: #1b2380;
+    --lavanda: #e3e2fd;
+    --lavanda-clara: #ecedff;
+    --papel: #f7f7fd;
+    --tinta: #11132b;
+    --tinta-suave: #4a4d6b;
+    --borda: #c9c8ef;
+    --erro: #a3122a;
+    --ok: #0f6b45;
+    --fonte: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  /* hidden vence o display das classes: sem isso o cartão de sucesso aparecia antes do envio (teste de 2026-10-02) */
+  [hidden] { display: none !important; }
+  /* campo focado não fica escondido atrás da barra fixa de envio */
+  html { -webkit-text-size-adjust: 100%; scroll-padding-bottom: 130px; }
+  body { margin: 0; background: var(--papel); color: var(--tinta); font: 16px/1.5 var(--fonte); }
+  header { background: var(--marinho); color: #fff; padding: calc(env(safe-area-inset-top, 0px) + 18px) 16px 18px; }
+  .topo { max-width: 680px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
+  .topo img { height: 52px; width: auto; flex: none; }
+  .topo h1 { margin: 0; font-size: 1.25rem; line-height: 1.25; text-wrap: balance; }
+  .topo p { margin: 2px 0 0; font-size: .85rem; opacity: .85; }
+  main { max-width: 680px; margin: 0 auto; padding: 20px 16px 140px; display: grid; gap: 18px; }
+  .aviso { background: var(--lavanda-clara); border: 1px solid var(--borda); border-radius: 8px; padding: 14px 16px; font-size: .92rem; display: grid; gap: 8px; }
+  .aviso p { margin: 0; }
+  .aviso .quem { color: var(--tinta-suave); font-size: .84rem; }
+  fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 14px; min-width: 0; }
+  .essencial { background: #fff; border: 1px solid var(--borda); border-radius: 8px; padding: 16px; }
+  legend { font-weight: 700; color: var(--marinho); font-size: 1.05rem; padding: 0; margin-bottom: 4px; }
+  .campo { display: grid; gap: 6px; min-width: 0; }
+  label, .rotulo { font-weight: 700; font-size: .95rem; }
+  .obrig { color: var(--marinho); }
+  .dica { color: var(--tinta-suave); font-size: .84rem; margin: 0; }
+  input[type=text], input[type=email], input[type=number], select, textarea {
+    width: 100%; font: inherit; color: var(--tinta); background: #fff; border: 1px solid var(--borda); border-radius: 6px; padding: 10px 12px; min-height: 44px;
+  }
+  textarea { resize: vertical; min-height: 84px; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible, button:focus-visible { outline: 3px solid var(--marinho-claro); outline-offset: 2px; }
+  [aria-invalid=true] { border-color: var(--erro); }
+  .erro-campo { color: var(--erro); font-size: .84rem; margin: 0; }
+  .dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 420px) { .dupla { grid-template-columns: 1fr; } }
+  details { background: #fff; border: 1px solid var(--borda); border-radius: 8px; }
+  details[open] { background: #fff; }
+  summary { cursor: pointer; list-style: none; padding: 12px 16px; font-weight: 700; color: var(--marinho); display: flex; justify-content: space-between; gap: 12px; min-height: 52px; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-size: 1.3rem; line-height: 1; flex: none; }
+  details[open] summary::after { content: "−"; }
+  summary span { display: grid; gap: 2px; min-width: 0; }
+  summary small { font-weight: 400; font-size: .84rem; color: var(--tinta-suave); }
+  .aviso-campo { color: #8a5a00; font-size: .84rem; margin: 0; }
+  .corpo { padding: 0 16px 16px; display: grid; gap: 14px; }
+  .opcoes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  .opcoes label { font-weight: 400; display: flex; align-items: center; gap: 8px; min-height: 36px; }
+  .opcoes input { width: 20px; height: 20px; }
+  .opcional-titulo { margin: 4px 0 -6px; font-size: .9rem; color: var(--tinta-suave); }
+  .barra { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--borda); padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px); }
+  .barra-dentro { max-width: 680px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+  .estado { flex: 1; min-width: 0; font-size: .86rem; color: var(--tinta-suave); }
+  button { font: inherit; font-weight: 700; border: 0; border-radius: 6px; padding: 12px 20px; min-height: 48px; cursor: pointer; }
+  .enviar { background: var(--marinho); color: #fff; }
+  .enviar:hover:not(:disabled) { background: var(--marinho-claro); }
+  .enviar:disabled { background: #b9b9cf; color: #fff; cursor: not-allowed; }
+  .secundario { background: var(--lavanda); color: var(--marinho); }
+  .falha { background: #fdecef; border: 1px solid #f0b8c2; color: var(--erro); border-radius: 8px; padding: 12px 14px; margin: 0; }
+  .sucesso { background: #fff; border: 1px solid var(--borda); border-radius: 8px; padding: 24px 18px; display: grid; gap: 12px; text-align: left; }
+  .sucesso h2 { margin: 0; color: var(--marinho); font-size: 1.3rem; }
+  .protocolo { font-family: Consolas, "Courier New", monospace; font-size: 1.15rem; background: var(--lavanda-clara); padding: 6px 10px; border-radius: 6px; justify-self: start; letter-spacing: .04em; }
+  .fora { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  @media (prefers-reduced-motion: no-preference) { .enviar { transition: background .15s; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="topo">
+    <img src="logo.png" alt="Faculdade ESEG">
+    <div>
+      <h1>Cadastro de tema de TG</h1>
+      <p>Metodologia Científica · Faculdade ESEG</p>
+    </div>
+  </div>
+</header>
+
+<main id="principal">
+  <section class="aviso" aria-label="Sobre este cadastro">
+    <p><strong>Conte o tema do seu Trabalho de Graduação.</strong> Só o tema, o seu nome e o seu e-mail são obrigatórios. O restante ajuda, mas pode ficar em branco.</p>
+    <p>O cadastro não inicia nenhum trabalho: ele fica guardado para ser incluído depois.</p>
+    <p class="quem">Projeto de aluno na disciplina de Metodologia Científica (docente Lina Cardona), organizado por Felipe Marins, RA 44776. Não é um sistema oficial da ESEG. Seus dados ficam só com o organizador, para tratar do seu tema, e não são publicados.</p>
+  </section>
+
+  <form id="form" novalidate>
+    <div style="display:grid;gap:18px">
+      <fieldset class="essencial">
+        <legend>O essencial</legend>
+        <div class="campo">
+          <label for="tema">Tema do TG <span class="obrig">(obrigatório)</span></label>
+          <textarea id="tema" name="tema" rows="3" maxlength="600" required aria-describedby="erro-tema" placeholder="Ex.: Uso de inteligência artificial na gestão de estoques do varejo"></textarea>
+          <p class="erro-campo" id="erro-tema" hidden></p>
+        </div>
+        <div class="campo">
+          <label for="nome">Seu nome <span class="obrig">(obrigatório)</span></label>
+          <input type="text" id="nome" name="nome" maxlength="160" autocomplete="name" enterkeyhint="next" required aria-describedby="erro-nome">
+          <p class="erro-campo" id="erro-nome" hidden></p>
+        </div>
+        <div class="campo">
+          <label for="email">Seu e-mail <span class="obrig">(obrigatório)</span></label>
+          <input type="email" id="email" name="email" maxlength="200" autocomplete="email" inputmode="email" enterkeyhint="next" required aria-describedby="erro-email">
+          <p class="erro-campo" id="erro-email" hidden></p>
+        </div>
+      </fieldset>
+
+      <p class="opcional-titulo">Tudo daqui para baixo é opcional. Abra a parte que quiser preencher.</p>
+
+      <details>
+        <summary><span>Sobre o trabalho<small>título, curso, pergunta</small></span></summary>
+        <div class="corpo">
+          <div class="campo"><label for="titulo">Título provisório</label><input type="text" id="titulo" name="titulo" maxlength="300"></div>
+          <div class="dupla">
+            <div class="campo"><label for="curso">Curso</label><input type="text" id="curso" name="curso" maxlength="160"></div>
+            <div class="campo"><label for="modalidade">Modalidade</label>
+              <select id="modalidade" name="modalidade">
+                <option value="">Não sei ainda</option>
+                <option value="monografia">Monografia</option>
+                <option value="artigo">Artigo científico</option>
+                <option value="relatorio_tecnico">Relatório técnico</option>
+                <option value="caso_de_ensino">Caso de ensino</option>
+                <option value="mvp">MVP (produto mínimo viável)</option>
+                <option value="criacao_de_empresa">Criação de empresa</option>
+              </select>
+            </div>
+          </div>
+          <div class="campo"><label for="palavrasChave">Palavras-chave</label><input type="text" id="palavrasChave" name="palavrasChave" maxlength="300" placeholder="Separe por vírgula; de 3 a 5"></div>
+          <div class="campo"><label for="problema">Problema ou pergunta de pesquisa</label><textarea id="problema" name="problema" maxlength="2000" placeholder="O que você quer descobrir ou resolver?"></textarea></div>
+          <div class="campo"><label for="objetivo">Objetivo</label><textarea id="objetivo" name="objetivo" maxlength="2000" placeholder="O que o trabalho precisa entregar ao final?"></textarea></div>
+        </div>
+      </details>
+
+      <details>
+        <summary><span>Como pesquisar<small>método, tamanho, período</small></span></summary>
+        <div class="corpo">
+          <div class="campo"><label for="metodo">Método</label>
+            <select id="metodo" name="metodo">
+              <option value="">Não sei ainda</option>
+              <option value="sugerir">Deixar o orientador do sistema sugerir</option>
+              <option value="pesquisa bibliográfica">Pesquisa bibliográfica</option>
+              <option value="pesquisa documental">Pesquisa documental (dados secundários)</option>
+              <option value="estudo de caso">Estudo de caso</option>
+              <option value="pesquisa-ação">Pesquisa-ação</option>
+              <option value="pesquisa tecnológica">Pesquisa tecnológica (artefato ou processo)</option>
+              <option value="levantamento (survey)">Levantamento (survey)</option>
+            </select>
+          </div>
+          <div class="campo"><label for="paginas">Páginas de texto</label><input type="number" id="paginas" name="paginas" min="10" max="300" inputmode="numeric" placeholder="Ex.: 40"><p class="aviso-campo" id="aviso-paginas" hidden></p><p class="dica">Só o texto, da introdução às considerações finais.</p></div>
+          <div class="dupla">
+            <div class="campo"><label for="periodoDe">Fontes a partir de (ano)</label><input type="number" id="periodoDe" name="periodoDe" min="1900" max="2100" inputmode="numeric" placeholder="Ex.: 2015"><p class="aviso-campo" id="aviso-periodoDe" hidden></p></div>
+            <div class="campo"><label for="periodoAte">Fontes até (ano)</label><input type="number" id="periodoAte" name="periodoAte" min="1900" max="2100" inputmode="numeric" placeholder="Ex.: 2026"><p class="aviso-campo" id="aviso-periodoAte" hidden></p></div>
+          </div>
+          <div class="campo"><span class="rotulo" id="rot-idiomas">Idiomas das fontes</span>
+            <div class="opcoes" role="group" aria-labelledby="rot-idiomas">
+              <label><input type="checkbox" name="idiomas" value="pt"> Português</label>
+              <label><input type="checkbox" name="idiomas" value="en"> Inglês</label>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary><span>Fontes<small>obras que devem entrar ou ser evitadas</small></span></summary>
+        <div class="corpo">
+          <div class="campo"><label for="obrigatorias">Obras que devem entrar</label><textarea id="obrigatorias" name="obrigatorias" maxlength="4000" placeholder="Uma por linha: autor, título, ano ou DOI"></textarea></div>
+          <div class="campo"><label for="vetadas">Obras ou fontes a evitar</label><textarea id="vetadas" name="vetadas" maxlength="2000"></textarea></div>
+        </div>
+      </details>
+
+      <details>
+        <summary><span>Materiais e artefato<small>entrevistas, dados, protótipo</small></span></summary>
+        <div class="corpo">
+          <div class="campo"><label for="materiais">Materiais que você já tem</label><textarea id="materiais" name="materiais" maxlength="3000" placeholder="Entrevistas, questionários, bases de dados, documentos da empresa…"></textarea><p class="dica">Só a descrição. Não envie arquivos nem dados pessoais de terceiros por aqui.</p></div>
+          <div class="campo"><label for="artefato">Artefato</label>
+            <select id="artefato" name="artefato">
+              <option value="">Não sei ainda</option>
+              <option value="nenhum">Sem artefato</option>
+              <option value="simulacao">Simulação</option>
+              <option value="calculo">Modelo de cálculo (viabilidade, dimensionamento)</option>
+              <option value="analise_dados">Análise de dados</option>
+              <option value="prototipo">Protótipo navegável</option>
+            </select>
+          </div>
+          <div class="campo"><label for="artefatoDescricao">Descrição do artefato</label><textarea id="artefatoDescricao" name="artefatoDescricao" maxlength="2000"></textarea></div>
+        </div>
+      </details>
+
+      <details>
+        <summary><span>Dados institucionais<small>orientador, ano, cidade</small></span></summary>
+        <div class="corpo">
+          <div class="campo"><label for="orientador">Professor orientador</label><input type="text" id="orientador" name="orientador" maxlength="160"></div>
+          <div class="dupla">
+            <div class="campo"><label for="ano">Ano de entrega</label><input type="number" id="ano" name="ano" min="2020" max="2100" inputmode="numeric" placeholder="Ex.: 2027"><p class="aviso-campo" id="aviso-ano" hidden></p></div>
+            <div class="campo"><label for="cidade">Cidade</label><input type="text" id="cidade" name="cidade" maxlength="120" placeholder="Ex.: São Paulo"></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary><span>Textos pessoais<small>dedicatória, agradecimentos</small></span></summary>
+        <div class="corpo">
+          <p class="dica">Esses textos são seus: o sistema nunca os escreve.</p>
+          <div class="campo"><label for="dedicatoria">Dedicatória</label><textarea id="dedicatoria" name="dedicatoria" maxlength="1500"></textarea></div>
+          <div class="campo"><label for="agradecimentos">Agradecimentos</label><textarea id="agradecimentos" name="agradecimentos" maxlength="4000"></textarea></div>
+          <div class="campo"><label for="epigrafe">Epígrafe</label><textarea id="epigrafe" name="epigrafe" maxlength="1000"></textarea></div>
+        </div>
+      </details>
+
+      <details>
+        <summary><span>Observações</span></summary>
+        <div class="corpo">
+          <div class="campo"><label for="observacoes">Algo mais que devemos saber</label><textarea id="observacoes" name="observacoes" maxlength="4000"></textarea></div>
+        </div>
+      </details>
+
+      <div class="fora" aria-hidden="true"><label for="site">Não preencha</label><input type="text" id="site" name="site" tabindex="-1" autocomplete="off"></div>
+      <p class="falha" id="falha" role="alert" hidden></p>
+    </div>
+  </form>
+
+  <section class="sucesso" id="sucesso" hidden aria-live="polite">
+    <h2>Cadastro recebido</h2>
+    <p id="sucesso-texto">Obrigado. O seu tema ficou guardado e será incluído depois.</p>
+    <span class="protocolo" id="protocolo"></span>
+    <p class="dica">Guarde o protocolo se quiser falar sobre este cadastro.</p>
+    <div><button type="button" class="secundario" id="outro">Cadastrar outro tema</button></div>
+  </section>
+</main>
+
+<div class="barra" id="barra">
+  <div class="barra-dentro">
+    <p class="estado" id="estado" aria-live="polite">Preencha tema, nome e e-mail para enviar.</p>
+    <button type="submit" form="form" class="enviar" id="enviar" disabled>Enviar cadastro</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const form = document.getElementById('form');
+  const enviar = document.getElementById('enviar');
+  const estado = document.getElementById('estado');
+  const falha = document.getElementById('falha');
+  // para onde vai o envio: "/enviar" no runner; a URL do Google Apps Script na página do GitHub Pages
+  const destino = (document.querySelector('meta[name=tcc-envio]')?.content || '').trim();
+  const RASCUNHO = 'cadastro-tg-rascunho';
+  // a mesma regra de e-mail do servidor (zod 4, z.regexes.email): o botão não habilita com e-mail que seria recusado
+  const EMAIL = /^(?:[A-Za-z0-9_'+\-]+\.)*[A-Za-z0-9_'+\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$/;
+  // tamanho em caracteres, como o servidor conta (emoji conta um)
+  const tamanho = (v) => [...v.trim()].length;
+  const basicos = () => ({ tema: tamanho(form.tema.value) >= 5, nome: tamanho(form.nome.value) >= 2, email: EMAIL.test(form.email.value.trim()) });
+  const MENSAGEM = { tema: 'Escreva o tema com pelo menos 5 caracteres.', nome: 'Escreva o seu nome.', email: 'Confira o e-mail.' };
+  // botão: habilitado assim que as três informações básicas são válidas; o resto nunca o desabilita
+  const atualizar = () => {
+    const b = basicos();
+    const pronto = b.tema && b.nome && b.email;
+    enviar.disabled = !pronto;
+    estado.textContent = pronto ? 'Pronto para enviar. O resto é opcional.' : 'Preencha tema, nome e e-mail para enviar.';
+  };
+  const marcar = (id, msg) => {
+    const el = form[id];
+    const e = document.getElementById('erro-' + id);
+    if (!el) return;
+    el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    if (e) { e.textContent = msg || ''; e.hidden = !msg; }
+  };
+  const conferir = (id) => {
+    if (!form[id].value.trim()) return marcar(id, '');
+    marcar(id, basicos()[id] ? '' : MENSAGEM[id]);
+  };
+  // números fora da faixa não impedem o envio: o campo é ignorado, e o aluno fica sabendo
+  const FAIXAS = { paginas: [10, 300], periodoDe: [1900, 2100], periodoAte: [1900, 2100], ano: [2020, 2100] };
+  const avisarFaixa = (id) => {
+    const el = form[id];
+    const aviso = document.getElementById('aviso-' + id);
+    const [min, max] = FAIXAS[id];
+    const v = el.value.trim();
+    let msg = '';
+    if (v && (!/^\d+$/.test(v) || +v < min || +v > max)) msg = `Use um número inteiro de ${min} a ${max}; do jeito que está, este campo será ignorado.`;
+    else if ((id === 'periodoDe' || id === 'periodoAte') && form.periodoDe.value && form.periodoAte.value && +form.periodoDe.value > +form.periodoAte.value) msg = 'O ano inicial está depois do final.';
+    aviso.textContent = msg;
+    aviso.hidden = !msg;
+  };
+  const dados = () => {
+    const d = {};
+    for (const el of form.elements) {
+      if (!el.name || el.name === 'idiomas' || el.type === 'submit') continue;
+      const v = el.value.trim();
+      if (v) d[el.name] = v;
+    }
+    const idiomas = [...form.querySelectorAll('input[name=idiomas]:checked')].map((x) => x.value);
+    if (idiomas.length) d.idiomas = idiomas;
+    return d;
+  };
+  const salvarRascunho = () => { try { localStorage.setItem(RASCUNHO, JSON.stringify(dados())); } catch {} };
+  const lerRascunho = () => {
+    try {
+      const d = JSON.parse(localStorage.getItem(RASCUNHO) || '{}');
+      for (const [k, v] of Object.entries(d)) {
+        if (k === 'idiomas') form.querySelectorAll('input[name=idiomas]').forEach((x) => { x.checked = v.includes(x.value); });
+        else if (form[k] && typeof v === 'string') form[k].value = v;
+      }
+    } catch {}
+  };
+  // erro devolvido pelo servidor: na barra de envio (sempre visível) e no campo, se o servidor disser qual
+  const mostrarFalha = (msg, campo) => {
+    falha.textContent = msg;
+    falha.hidden = false;
+    estado.textContent = msg;
+    if (campo && form[campo]) {
+      const detalhes = form[campo].closest('details');
+      if (detalhes) detalhes.open = true;
+      marcar(campo, msg);
+      form[campo].focus();
+    }
+  };
+  form.addEventListener('input', (ev) => {
+    atualizar();
+    salvarRascunho();
+    if (ev.target.name in FAIXAS) avisarFaixa(ev.target.name);
+  });
+  for (const id of ['tema', 'nome', 'email']) form[id].addEventListener('blur', () => conferir(id));
+  // Enter num campo de uma linha avança para o próximo; o envio é só pelo botão (no celular, o "Ir" do teclado
+  // enviava com os opcionais ainda fechados)
+  form.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter' || ev.target.tagName !== 'INPUT' || ev.target.type === 'checkbox') return;
+    ev.preventDefault();
+    const campos = [...form.querySelectorAll('input:not([type=checkbox]):not([tabindex="-1"]), textarea, select')].filter((c) => c.offsetParent !== null);
+    const i = campos.indexOf(ev.target);
+    if (campos[i + 1]) campos[i + 1].focus();
+  });
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    falha.hidden = true;
+    const b = basicos();
+    if (!(b.tema && b.nome && b.email)) { ['tema', 'nome', 'email'].forEach(conferir); return; }
+    if (!destino) return mostrarFalha('O envio ainda não foi aberto pelo organizador. Tente de novo mais tarde.');
+    enviar.disabled = true;
+    estado.textContent = 'Enviando…';
+    try {
+      // corpo em texto simples: o Google Apps Script não aceita a consulta prévia (CORS) que um JSON declarado pede
+      const r = await fetch(destino, { method: 'POST', body: JSON.stringify(dados()) });
+      const corpo = await r.json().catch(() => ({}));
+      if (!r.ok || corpo.ok === false || !corpo.protocolo) {
+        atualizar();
+        return mostrarFalha(corpo.erro || 'Não foi possível enviar agora. Tente de novo em instantes.', corpo.campo);
+      }
+      try { localStorage.removeItem(RASCUNHO); } catch {}
+      document.getElementById('protocolo').textContent = 'Protocolo ' + corpo.protocolo;
+      document.getElementById('sucesso-texto').textContent = 'Obrigado, ' + form.nome.value.trim().split(/\s+/)[0] + '. O seu tema ficou guardado e será incluído depois.';
+      form.hidden = true;
+      document.querySelector('.aviso').hidden = true;
+      document.getElementById('barra').hidden = true;
+      document.getElementById('sucesso').hidden = false;
+      window.scrollTo(0, 0);
+    } catch {
+      atualizar();
+      mostrarFalha('Sem conexão com o servidor. Confira a internet e tente de novo.');
+    }
+  });
+  document.getElementById('outro').addEventListener('click', () => {
+    form.reset();
+    ['tema', 'nome', 'email'].forEach((id) => marcar(id, ''));
+    Object.keys(FAIXAS).forEach(avisarFaixa);
+    falha.hidden = true;
+    form.hidden = false;
+    document.querySelector('.aviso').hidden = false;
+    document.getElementById('barra').hidden = false;
+    document.getElementById('sucesso').hidden = true;
+    atualizar();
+    form.tema.focus();
+  });
+  lerRascunho();
+  Object.keys(FAIXAS).forEach(avisarFaixa);
+  atualizar();
+})();
+</script>
+</body>
+</html>
