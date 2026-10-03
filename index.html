@@ -248,7 +248,7 @@
 
 <div class="barra" id="barra">
   <div class="barra-dentro">
-    <p class="estado" id="estado" aria-live="polite">Preencha tema, nome e e-mail para enviar.</p>
+    <p class="estado" id="estado" aria-live="polite">Preencha tema, nome e e‑mail para enviar.</p>
     <button type="submit" form="form" class="enviar" id="enviar" disabled>Enviar cadastro</button>
   </div>
 </div>
@@ -273,7 +273,7 @@
     const b = basicos();
     const pronto = b.tema && b.nome && b.email;
     enviar.disabled = !pronto;
-    estado.textContent = pronto ? 'Pronto para enviar. O resto é opcional.' : 'Preencha tema, nome e e-mail para enviar.';
+    estado.textContent = pronto ? 'Pronto para enviar. O resto é opcional.' : 'Preencha tema, nome e e‑mail para enviar.';
   };
   const marcar = (id, msg) => {
     const el = form[id];
